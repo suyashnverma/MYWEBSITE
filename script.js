@@ -212,3 +212,15 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
 }); // <-- end of DOMContentLoaded listener
+
+
+// Close dropdowns and nav on page show (including back/forward navigation)
+window.addEventListener('pageshow', function() {
+  // Close any open dropdowns
+  document.querySelectorAll('.dropdown.open').forEach(function(drop) {
+    drop.classList.remove('open');
+  });
+  // Close nav (if open)
+  var nav = document.querySelector('.nav.open');
+  if (nav) nav.classList.remove('open');
+});
