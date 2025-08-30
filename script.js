@@ -33,7 +33,7 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   // Load header and initialize dropdown after it loads
-  fetch('header.html')
+  fetch('./header.html')
     .then(response => response.text())
     .then(html => {
       const element = document.getElementById('header-placeholder');
