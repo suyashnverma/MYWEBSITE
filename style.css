@@ -41,6 +41,7 @@ body {
 .header {
   background: #ffffffc9;
   backdrop-filter: blur(6px);
+  position: sticky; top: 0; z-index: 101;
   border-bottom: 1px solid #e2e8f0;
 }
 
