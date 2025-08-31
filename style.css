@@ -14,6 +14,10 @@ body {
 .mt-2 { margin-top: 2rem; }
 .lead { font-size: 1.125rem; }
 
+.container h2 {
+  text-align: center;
+}
+
 
 .btn {
   display: block;      /* keep it inline so it doesn’t stretch full width */
