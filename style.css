@@ -427,9 +427,9 @@ body {
 
 .contributors {
   background: #ede4c2;
-  padding: 3rem 0;
+  padding: .5rem 0;
   border-radius: .75rem;
-  margin-top: 2rem;
+  margin-top: 0rem;
 }
 
 .contributors h2 {
@@ -797,7 +797,7 @@ a:focus-visible, button:focus-visible { outline: 3px solid #06b6d4; outline-offs
 
 .success-stories.highlight {
   background-color: #81b1e1;  /* light pastel blue (subtle highlight) */
-  padding: 60px 0;            /* add breathing room */
+  padding: 10px 0;            /* add breathing room */
 }
 
 .success-stories.highlight h2
