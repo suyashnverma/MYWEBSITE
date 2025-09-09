@@ -153,7 +153,7 @@ body {
 /* ---------- Sections ---------- */
 .hero {
   background: radial-gradient(80% 60% at 50% 10%, #ccfbf1 0%, #f8fafc 60%);
-  padding: 5rem 0 4rem;
+  padding: 2rem 0 0rem;
   text-align: center;
 }
 .hero h1 { font-size: clamp(2rem, 3.8vw, 3rem); margin: 0 0 .75rem; }
@@ -815,5 +815,5 @@ a:focus-visible, button:focus-visible { outline: 3px solid #06b6d4; outline-offs
 }
 
 section {
-  margin-bottom: 60px; /* adds space after every section */
+  margin-bottom: 15px; /* adds space after every section */
 }
