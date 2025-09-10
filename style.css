@@ -152,7 +152,7 @@ body {
 
 /* ---------- Sections ---------- */
 .hero {
-  background: radial-gradient(80% 60% at 50% 10%, #ccfbf1 0%, #f8fafc 60%);
+  background: radial-gradient(80% 60% at 50% 10%, #ccfbf1 0%, #e3f1ff 60%);
   padding: 2rem 0 0rem;
   text-align: center;
 }
@@ -454,6 +454,16 @@ body {
   color: inherit; /* keep text color same */
   text-decoration: none; /* remove link underline */
 }
+
+.contributor-card .contributor-img {
+  width: 100%;
+  height: auto;
+  display: block;
+  object-fit: cover; /* Ensures image covers the container */
+  border-radius: 8px; /* Optional: rounded corners */
+
+}
+
 
 .contributor-card h3 
 {
