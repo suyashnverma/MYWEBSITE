@@ -218,13 +218,12 @@ if (carouselImages.length > 0) {
     });
   });
 
-
-
-// Contributors carousel – manual navigation per card
+// Contributors carousel – manual navigation per card WITH touch support
 document.querySelectorAll('.contributor-card').forEach(card => {
   const slides = card.querySelectorAll('.slide');
   const dots = card.querySelectorAll('.dot');
 
+  // Dot click functionality
   dots.forEach((dot, i) => {
     dot.addEventListener('click', () => {
       slides.forEach(s => s.classList.remove('active'));
@@ -234,72 +233,69 @@ document.querySelectorAll('.contributor-card').forEach(card => {
       dot.classList.add('active');
     });
   });
-});
 
+  // Touch-based swipe functionality for mobile
+  let startX = 0;
+  let startY = 0;
+  let isSwiping = false;
 
+  const carousel = card.querySelector('.carousel');
+  if (carousel) {
+    // Touch start
+    carousel.addEventListener('touchstart', (e) => {
+      const touch = e.touches[0];
+      startX = touch.clientX;
+      startY = touch.clientY;
+      isSwiping = false;
+    }, { passive: false });
 
-// Touch-based swipe functionality for mobile
-let startX = 0;
-let startY = 0;
-let isSwiping = false;
-
-const carousel = card.querySelector('.carousel');
-if (carousel) {
-  // Touch start
-  carousel.addEventListener('touchstart', (e) => {
-    const touch = e.touches[0];
-    startX = touch.clientX;
-    startY = touch.clientY;
-    isSwiping = false;
-  }, { passive: false });
-
-  // Touch move
-  carousel.addEventListener('touchmove', (e) => {
-    if (e.touches.length !== 1) return;
-    
-    const touch = e.touches[0];
-    const deltaX = touch.clientX - startX;
-    const deltaY = touch.clientY - startY;
-    
-    // If horizontal swipe is detected, prevent vertical scrolling
-    if (Math.abs(deltaX) > Math.abs(deltaY) && Math.abs(deltaX) > 10) {
-      e.preventDefault();
-      isSwiping = true;
-    }
-  }, { passive: false });
-
-  // Touch end
-  carousel.addEventListener('touchend', (e) => {
-    if (!isSwiping) return;
-    
-    const touch = e.changedTouches[0];
-    const deltaX = touch.clientX - startX;
-    const minSwipeDistance = 50;
-    
-    if (Math.abs(deltaX) > minSwipeDistance) {
-      const currentActive = Array.from(slides).findIndex(slide => slide.classList.contains('active'));
-      let newIndex;
+    // Touch move
+    carousel.addEventListener('touchmove', (e) => {
+      if (e.touches.length !== 1) return;
       
-      if (deltaX > 0) {
-        // Swipe right - go to previous slide
-        newIndex = currentActive > 0 ? currentActive - 1 : slides.length - 1;
-      } else {
-        // Swipe left - go to next slide
-        newIndex = currentActive < slides.length - 1 ? currentActive + 1 : 0;
+      const touch = e.touches[0];
+      const deltaX = touch.clientX - startX;
+      const deltaY = touch.clientY - startY;
+      
+      // If horizontal swipe is detected, prevent vertical scrolling
+      if (Math.abs(deltaX) > Math.abs(deltaY) && Math.abs(deltaX) > 10) {
+        e.preventDefault();
+        isSwiping = true;
+      }
+    }, { passive: false });
+
+    // Touch end
+    carousel.addEventListener('touchend', (e) => {
+      if (!isSwiping) return;
+      
+      const touch = e.changedTouches[0];
+      const deltaX = touch.clientX - startX;
+      const minSwipeDistance = 50;
+      
+      if (Math.abs(deltaX) > minSwipeDistance) {
+        const currentActive = Array.from(slides).findIndex(slide => slide.classList.contains('active'));
+        let newIndex;
+        
+        if (deltaX > 0) {
+          // Swipe right - go to previous slide
+          newIndex = currentActive > 0 ? currentActive - 1 : slides.length - 1;
+        } else {
+          // Swipe left - go to next slide
+          newIndex = currentActive < slides.length - 1 ? currentActive + 1 : 0;
+        }
+        
+        // Update slides and dots
+        slides.forEach(s => s.classList.remove('active'));
+        dots.forEach(d => d.classList.remove('active'));
+        
+        slides[newIndex].classList.add('active');
+        dots[newIndex].classList.add('active');
       }
       
-      // Update slides and dots
-      slides.forEach(s => s.classList.remove('active'));
-      dots.forEach(d => d.classList.remove('active'));
-      
-      slides[newIndex].classList.add('active');
-      dots[newIndex].classList.add('active');
-    }
-    
-    isSwiping = false;
-  }, { passive: false });
-}
-
+      isSwiping = false;
+    }, { passive: false });
+  }
+});
 
 }); // <-- end of DOMContentLoaded listener
 
