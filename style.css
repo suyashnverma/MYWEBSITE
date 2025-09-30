@@ -1389,12 +1389,16 @@ footer.contact {
   }
   
   .dropdown-menu { 
-    position: static; 
-    display: none; 
-    width: 100%; 
-    margin-top: .5rem; 
-    right: auto; 
-  }
+  position: static; 
+  display: none; 
+  width: 100%; 
+  margin-top: .5rem; 
+  right: auto;
+  max-height: calc(100vh - 160px);
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding-bottom: 2rem;
+}
   
   .dropdown.open .dropdown-menu { 
     display: block; 
