@@ -53,15 +53,27 @@ document.addEventListener('DOMContentLoaded', () => {
   // Mobile nav toggle function
   // ------------------------
   function initializeMobileNav() {
-    const hamburger = document.getElementById('hamburger');
-    const nav = document.getElementById('navMenu');
-    if (hamburger && nav) {
-      hamburger.addEventListener('click', () => {
-        const isOpen = nav.classList.toggle('open');
-        hamburger.setAttribute('aria-expanded', String(isOpen));
-      });
-    }
+  const hamburger = document.getElementById('hamburger');
+  const nav = document.getElementById('navMenu');
+  if (hamburger && nav) {
+    hamburger.addEventListener('click', () => {
+      const isOpen = nav.classList.toggle('open');
+      hamburger.setAttribute('aria-expanded', String(isOpen));
+
+      // If nav is being closed, also reset submenus
+      if (!isOpen) {
+        document.querySelectorAll('.menu-item.has-submenu').forEach(item => {
+          item.classList.remove('open');
+        });
+        document.querySelectorAll('.submenu-toggle').forEach(toggle => {
+          toggle.setAttribute('aria-expanded', 'false');
+          toggle.textContent = '▸';
+        });
+      }
+    });
   }
+}
+
 
   // ------------------------
   // Multi-level dropdown function
