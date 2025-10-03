@@ -283,6 +283,80 @@ body {
 }
 
 
+/* ---------- Breadcrumb Sticky ---------- */
+.breadcrumb-sticky {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background: #ffffffc9;
+  backdrop-filter: blur(6px);
+  border-bottom: 1px solid #e2e8f0;
+  opacity: 0;
+  transform: translateY(-100%);
+  transition: opacity 0.3s ease, transform 0.3s ease;
+  pointer-events: none;
+}
+
+.breadcrumb-sticky.visible {
+  opacity: 1;
+  transform: translateY(0);
+  pointer-events: auto;
+}
+
+.breadcrumb-list {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin: 0;
+  padding: 0.75rem 0;
+  list-style: none;
+  font-size: 0.9rem;
+  color: #64748b;
+  flex-wrap: wrap;
+}
+
+.breadcrumb-list li {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.breadcrumb-list a {
+  color: #0f766e;
+  text-decoration: none;
+  transition: color 0.2s ease;
+}
+
+.breadcrumb-list a:hover {
+  color: #0d9488;
+  text-decoration: underline;
+}
+
+.breadcrumb-list .current {
+  color: #0f172a;
+  font-weight: 500;
+}
+
+.breadcrumb-separator {
+  color: #94a3b8;
+  user-select: none;
+}
+
+/* Hide breadcrumb on homepage */
+body.homepage .breadcrumb-sticky {
+  display: none;
+}
+
+/* Mobile breadcrumb adjustments */
+@media (max-width: 768px) {
+  .breadcrumb-list {
+    font-size: 0.85rem;
+    padding: 0.6rem 0;
+  }
+}
+
+
+
 /* ---------- Sections ---------- */
 .hero {
   background: radial-gradient(80% 60% at 50% 10%, #ccfbf1 0%, #e3f1ff 60%);
