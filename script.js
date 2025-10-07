@@ -792,6 +792,280 @@ function initializeDropdown() {
     });
   }
 
+// ========================
+// SERVICES PAGE - DYNAMIC ARROW CONNECTIONS WITH SMART ROUTING
+// ========================
+
+// Only run on services page
+if (document.querySelector('.section--process-flow')) {
+  
+  const canvas = document.querySelector('.arrow-canvas');
+  const processContainer = document.querySelector('.process-flow-container');
+  
+  if (canvas && processContainer) {
+    
+    // Create arrowhead markers
+    function createArrowMarkers() {
+      const defs = document.createElementNS('http://www.w3.org/2000/svg', 'defs');
+      
+      // Main arrow marker (for card-to-card connections)
+      const mainMarker = document.createElementNS('http://www.w3.org/2000/svg', 'marker');
+      mainMarker.setAttribute('id', 'arrowhead-main');
+      mainMarker.setAttribute('markerWidth', '10');
+      mainMarker.setAttribute('markerHeight', '10');
+      mainMarker.setAttribute('refX', '9');
+      mainMarker.setAttribute('refY', '3');
+      mainMarker.setAttribute('orient', 'auto');
+      mainMarker.setAttribute('markerUnits', 'strokeWidth');
+      mainMarker.classList.add('main-arrow-marker');
+      
+      const mainPath = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+      mainPath.setAttribute('d', 'M0,0 L0,6 L9,3 z');
+      mainMarker.appendChild(mainPath);
+      
+      // Sub-service arrow marker
+      const subMarker = document.createElementNS('http://www.w3.org/2000/svg', 'marker');
+      subMarker.setAttribute('id', 'arrowhead-sub');
+      subMarker.setAttribute('markerWidth', '8');
+      subMarker.setAttribute('markerHeight', '8');
+      subMarker.setAttribute('refX', '7');
+      subMarker.setAttribute('refY', '3');
+      subMarker.setAttribute('orient', 'auto');
+      subMarker.setAttribute('markerUnits', 'strokeWidth');
+      
+      const subPath = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+      subPath.setAttribute('d', 'M0,0 L0,6 L7,3 z');
+      subMarker.appendChild(subPath);
+      
+      defs.appendChild(mainMarker);
+      defs.appendChild(subMarker);
+      canvas.appendChild(defs);
+    }
+    
+    // Get center point of an element relative to container
+    function getCenter(element, container) {
+      const containerRect = container.getBoundingClientRect();
+      const elementRect = element.getBoundingClientRect();
+      
+      return {
+        x: elementRect.left + elementRect.width / 2 - containerRect.left,
+        y: elementRect.top + elementRect.height / 2 - containerRect.top
+      };
+    }
+    
+    // Get connection points for card edges
+    function getCardConnectionPoint(card, side) {
+      const containerRect = processContainer.getBoundingClientRect();
+      const cardRect = card.getBoundingClientRect();
+      
+      let x, y;
+      
+      if (side === 'right') {
+        x = cardRect.right - containerRect.left;
+        y = cardRect.top + cardRect.height / 2 - containerRect.top;
+      } else if (side === 'left') {
+        x = cardRect.left - containerRect.left;
+        y = cardRect.top + cardRect.height / 2 - containerRect.top;
+      } else if (side === 'bottom') {
+        x = cardRect.left + cardRect.width / 2 - containerRect.left;
+        y = cardRect.bottom - containerRect.top;
+      } else if (side === 'top') {
+        x = cardRect.left + cardRect.width / 2 - containerRect.left;
+        y = cardRect.top - containerRect.top;
+      }
+      
+      return { x, y };
+    }
+    
+    // Create curved path between two points
+    function createCurvedPath(start, end, isHorizontal) {
+      if (isHorizontal) {
+        // Horizontal flow with curve
+        const midX = (start.x + end.x) / 2;
+        return `M ${start.x},${start.y} C ${midX},${start.y} ${midX},${end.y} ${end.x},${end.y}`;
+      } else {
+        // Vertical flow with curve
+        const midY = (start.y + end.y) / 2;
+        return `M ${start.x},${start.y} C ${start.x},${midY} ${end.x},${midY} ${end.x},${end.y}`;
+      }
+    }
+    
+   // Create smart routed path that goes around obstacles
+function createRoutedPath(start, end, currentCard, nextCard, isMobile) {
+  const containerRect = processContainer.getBoundingClientRect();
+  const currentRect = currentCard.getBoundingClientRect();
+  const nextRect = nextCard.getBoundingClientRect();
+  
+  // Calculate card boundaries relative to container
+  const currentBottom = currentRect.bottom - containerRect.top;
+  const currentRight = currentRect.right - containerRect.left;
+  const nextTop = nextRect.top - containerRect.top;
+  const nextLeft = nextRect.left - containerRect.left;
+  const nextRight = nextRect.right - containerRect.left;
+  const nextCenterX = (nextLeft + nextRight) / 2;
+  
+  if (isMobile) {
+    // Mobile: Simple vertical path with clearance
+    const clearance = 30;
+    return `M ${start.x},${start.y} L ${start.x},${end.y} L ${end.x},${end.y}`;
+  } else {
+    // Desktop: Route around cards
+    const clearance = 50;
+    
+    // Check if cards are on same row (Y position similar)
+    const sameRow = Math.abs(currentRect.top - nextRect.top) < 50;
+    
+    if (sameRow) {
+      // Side by side: simple straight horizontal line
+      return `M ${start.x},${start.y} L ${end.x},${end.y}`;
+    } else {
+      // Different rows: L-shaped path positioned in the middle of the gap
+      const horizontalEnd = currentRight + clearance;
+      
+      // Position the horizontal line in the MIDDLE of the vertical gap
+      const middleY = (currentBottom + nextTop) / 2;
+      
+      return `M ${start.x},${start.y} 
+              L ${horizontalEnd},${start.y} 
+              L ${horizontalEnd},${middleY} 
+              L ${nextCenterX},${middleY} 
+              L ${nextCenterX},${end.y}`;
+    }
+  }
+}
+    
+    // Draw arrows between sub-services within a card
+function drawSubServiceArrows() {
+  const subServiceGroups = document.querySelectorAll('.sub-services');
+  
+  subServiceGroups.forEach(group => {
+    const items = group.querySelectorAll('.sub-service-item');
+    
+    for (let i = 0; i < items.length - 1; i++) {
+      const current = items[i];
+      const next = items[i + 1];
+      
+      // Determine if mobile (vertical) or desktop (could be horizontal)
+      const isMobile = window.innerWidth <= 768;
+      
+      let start, end;
+      
+      if (isMobile) {
+        // Mobile: vertical arrows
+        start = getCardConnectionPoint(current, 'bottom');
+        end = getCardConnectionPoint(next, 'top');
+      } else {
+        // Desktop: check if items are stacked or side-by-side
+        const currentRect = current.getBoundingClientRect();
+        const nextRect = next.getBoundingClientRect();
+        
+        // If next item is below current (vertically stacked)
+        if (nextRect.top > currentRect.bottom - 10) {
+          start = getCardConnectionPoint(current, 'bottom');
+          end = getCardConnectionPoint(next, 'top');
+        } else {
+          // Side by side
+          start = getCardConnectionPoint(current, 'right');
+          end = getCardConnectionPoint(next, 'left');
+        }
+      }
+      
+      const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+      const pathData = createCurvedPath(start, end, !isMobile && end.y === start.y);
+      
+      path.setAttribute('d', pathData);
+            path.classList.add('sub-arrow');
+      
+      canvas.appendChild(path);
+    }
+  });
+}
+    
+    // Draw arrows between main service cards with smart routing
+function drawMainCardArrows() {
+  const cards = document.querySelectorAll('.service-flow-card');
+  
+  if (cards.length < 2) return;
+  
+  const isMobile = window.innerWidth <= 768;
+  
+  for (let i = 0; i < cards.length - 1; i++) {
+    const current = cards[i];
+    const next = cards[i + 1];
+    
+    let start, end;
+    
+    if (isMobile) {
+      // Mobile: vertical connection
+      start = getCardConnectionPoint(current, 'bottom');
+      end = getCardConnectionPoint(next, 'top');
+    } else {
+      // Desktop: check if cards are on same row
+      const currentRect = current.getBoundingClientRect();
+      const nextRect = next.getBoundingClientRect();
+      const sameRow = Math.abs(currentRect.top - nextRect.top) < 50;
+      
+      if (sameRow) {
+        // Same row: connect right to left
+        start = getCardConnectionPoint(current, 'right');
+        end = getCardConnectionPoint(next, 'left');
+      } else {
+        // Different rows: connect right to top
+        start = getCardConnectionPoint(current, 'right');
+        end = getCardConnectionPoint(next, 'top');
+      }
+    }
+    
+    const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+    const pathData = createRoutedPath(start, end, current, next, isMobile);
+    
+    path.setAttribute('d', pathData);
+        path.classList.add('main-arrow');
+    
+    canvas.appendChild(path);
+  }
+}
+    
+    // Main draw function
+    function drawAllArrows() {
+      // Clear existing arrows
+      while (canvas.firstChild) {
+        canvas.removeChild(canvas.firstChild);
+      }
+      
+      // Recreate markers
+      createArrowMarkers();
+      
+      // Draw all arrows
+      drawSubServiceArrows();
+      drawMainCardArrows();
+    }
+    
+    // Initialize
+    drawAllArrows();
+    
+    // Redraw on window resize with debounce
+    let resizeTimeout;
+    window.addEventListener('resize', () => {
+      clearTimeout(resizeTimeout);
+      resizeTimeout = setTimeout(() => {
+        drawAllArrows();
+      }, 150);
+    });
+    
+    // Redraw when images load (in case layout shifts)
+    const images = document.querySelectorAll('.sub-service-icon');
+    images.forEach(img => {
+      if (!img.complete) {
+        img.addEventListener('load', () => {
+          drawAllArrows();
+        });
+      }
+    });
+  }
+}
+
+
 }); // <-- end of DOMContentLoaded listener
 
 // Close dropdowns and nav on page show (including back/forward navigation)
