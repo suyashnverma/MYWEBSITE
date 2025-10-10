@@ -1138,7 +1138,7 @@ document.addEventListener('DOMContentLoaded', () => {
       },
       1: {
         title: 'Copyediting',
-        description: "A stage where the writer needs an extra set of eyes. Here, a copyeditor corrects grammar, spelling, punctuation, and syntax while maintaining the writer's This is the stage where the writer needs an extra set of eyes. A copyeditor corrects grammar, spelling, punctuation, and syntax while preserving the writer’s unique voice and style throughout the text."
+        description: "A stage where the writer needs an extra set of eyes. Here, a copyeditor corrects grammar, spelling, punctuation, and syntax while maintaining the writers This is the stage where the writer needs an extra set of eyes. A copyeditor corrects grammar, spelling, punctuation, and syntax while preserving the writer’s unique voice and style throughout the text."
       },
       2: {
         title: 'Proofreading',
